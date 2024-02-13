@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"github.com/anaskhan96/soup"
 	"os"
-    // "html"
-    // "bytes"
+    //"html"
+    "bytes"
     // "log"
-    // "io/ioutil"
+    "io/ioutil"
 
-    // "net/http"
+    "net/http"
     // "net/url"
     "encoding/json"
 )
@@ -38,6 +38,74 @@ func getDaily(){
 	fmt.Println(doc)
 
 
+}
+
+func getProblemsTest() {
+	query := `
+		query dailyCodingQuestionRecords($year: Int!, $month: Int!) {
+			dailyCodingChallengeV2(year: $year, month: $month) {
+				challenges {
+					date
+					userStatus
+					link
+					question {
+						questionFrontendId
+						title
+						titleSlug
+					}
+				}
+				weeklyChallenges {
+					date
+					userStatus
+					link
+					question {
+						questionFrontendId
+						title
+						titleSlug
+						isPaidOnly
+					}
+				}
+			}
+		}
+	`
+	variables := map[string]interface{}{
+		"year":  2024,
+		"month": 2,
+	}
+
+	payload := map[string]interface{}{
+		"query":     query,
+		"variables": variables,
+	}
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		fmt.Printf("Error marshalling data: %s\n", err)
+		return
+	}
+
+	req, err := http.NewRequest("POST", "https://leetcode.com/graphql/", bytes.NewBuffer(jsonData))
+	if err != nil {
+		fmt.Printf("Error creating request: %s\n", err)
+		return
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("Error making request: %s\n", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("Error reading response body: %s\n", err)
+		return
+	}
+
+	fmt.Println("Response:", string(body))
 }
 
 // func getDaily(){
