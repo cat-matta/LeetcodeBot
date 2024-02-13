@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"github.com/anaskhan96/soup"
 	"os"
-    // "html"
-    // "bytes"
+    //"html"
+    "bytes"
     // "log"
-    // "io/ioutil"
+    "io/ioutil"
 
-    // "net/http"
+    "net/http"
     // "net/url"
     "encoding/json"
 )
