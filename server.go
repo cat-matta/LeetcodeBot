@@ -10,16 +10,10 @@ import (
 )
 
 func main() {
-	// fmt.Printf(parse("hudson-river-trading"))
-	// getDaily()
-    // getProblemsTest()
-	// parse("hudson-river-trading")
 		http.HandleFunc("/", getRoot)
 		http.HandleFunc("/daily", getDaily)
 		http.HandleFunc("/company", getCompany)
 		http.HandleFunc("/test", getTest)
-		// http.HandleFunc("/all", getAll)
-
 		err := http.ListenAndServe(":3333", nil)
   	if errors.Is(err, http.ErrServerClosed) {
 		fmt.Printf("server closed\n")
@@ -31,7 +25,7 @@ func main() {
 	}
 	func getRoot(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("got / request\n")
-		io.WriteString(w, "Usage:\n/daily: gets the leetcode daily problem\ncompany?name={name}: gets the list of problems for a company\n/test: all the problems")
+		io.WriteString(w, "Usage:\n/daily: gets the leetcode daily problem\n/company?name={name}: gets the list of problems for a company (ex: /company?name=google)\n/test: all the problems")
 	}
 
     func getDaily(w http.ResponseWriter, r *http.Request) {

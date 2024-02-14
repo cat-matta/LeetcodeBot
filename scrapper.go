@@ -4,24 +4,12 @@ import (
 	"fmt"
 	"github.com/anaskhan96/soup"
 	"os"
-    //"html"
     "bytes"
-    // "log"
     "io/ioutil"
-
     "net/http"
-    // "net/url"
     "encoding/json"
 )
 
-
-// func main() {
-
-// 	parse("hudson-river-trading")
-// 	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-//         // fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
-//     // })
-// }
 
 
 type problem map[string]interface{}
@@ -178,23 +166,18 @@ func getCompanyProblems(company string) string{
 	for  i := 1; i < len(elements); i++ {
 		item := elements[i]
 		row := item.FindAll("td")
-		// out.cut(0,4)
 		data := []string{}
 
 		for _, thing := range row{
 			url := thing.Find("a")
 
 			if(thing.Text() != ""){
-				// fmt.Println(thing.Text())
 				data = append(data, thing.Text())
-
 			}
 			if(url.Error == nil){
-				// fmt.Println(url.Attrs()["href"])
 				data = append(data, url.Attrs()["href"])
 			}
 		}
-		// fmt.Println(data)
 		individual := problem{
 			"Number": data[0],
 			"Name": data[1],
