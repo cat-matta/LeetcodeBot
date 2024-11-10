@@ -4,29 +4,17 @@ import (
 	"fmt"
 	"github.com/anaskhan96/soup"
 	"os"
-    //"html"
     "bytes"
-    // "log"
     "io/ioutil"
-
     "net/http"
-    // "net/url"
     "encoding/json"
 )
 
 
-// func main() {
-
-// 	parse("hudson-river-trading")
-// 	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-//         // fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
-//     // })
-// }
-
 
 type problem map[string]interface{}
 
-func getDaily(){
+func getAllProblems() string{
 	url := "https://leetcode.com/problemset/all/"
 	resp, err := soup.Get(url)
 	if err != nil {
@@ -35,12 +23,12 @@ func getDaily(){
 	doc := soup.HTMLParse(resp)
 	// table := doc.Find("table")
 	// elements := table.FindAll("tr")
-	fmt.Println(doc)
+	return fmt.Sprintf("%s", doc)
 
 
 }
 
-func getProblemsTest() {
+func getProblemsTest() string{
 	query := `
 		query dailyCodingQuestionRecords($year: Int!, $month: Int!) {
 			dailyCodingChallengeV2(year: $year, month: $month) {
@@ -79,14 +67,14 @@ func getProblemsTest() {
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Error marshalling data: %s\n", err)
-		return
+		 return fmt.Sprintf("Error marshalling data: %s\n", err)
+		
 	}
 
 	req, err := http.NewRequest("POST", "https://leetcode.com/graphql/", bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Printf("Error creating request: %s\n", err)
-		return
+		return fmt.Sprintf("Error creating request: %s\n", err)
+		
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -94,46 +82,75 @@ func getProblemsTest() {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Printf("Error making request: %s\n", err)
-		return
+		return fmt.Sprintf("Error making request: %s\n", err)
+		
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %s\n", err)
-		return
+		return fmt.Sprintf("Error reading response body: %s\n", err)
+		
 	}
 
-	fmt.Println("Response:", string(body))
+	return fmt.Sprintf("Response:", string(body))
 }
 
-// func getDaily(){
-// 	data := `{"query":"query questionOfToday {\n\tactiveDailyCodingChallengeQuestion {\n\t\tdate\n\t\tlink\n\t\tquestion {\n\t\t\tacRate\n\t\t\tdifficulty\n\t\t\tfreqBar\n\t\t\ttitle\n\t\t\ttopicTags {\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n}\n","operationName":"questionOfToday"}`
-// 	json_str, _ := json.Marshal(data)
-// 	b := bytes.NewBuffer(json_str)
-// 	req, err := http.NewRequest("POST", "https://leetcode.com/graphql", b)
-// 	req.Header.Set("Referer", "https://leetcode.com/")
-// 	req.Header.Set("Cookie", "csrftoken=Brk3S7hrQzzqD2hsXJp53WxWmoUkKLYfAOSJAzsgeOXfuvpP68nPjCr4sXixg0RT; __stripe_mid=ba437637-6583-4bf0-bc60-dc5eddd64056da29b9; LEETCODE_SESSION=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfYXV0aF91c2VyX2lkIjoiMjYxNzQ3MCIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImFsbGF1dGguYWNjb3VudC5hdXRoX2JhY2tlbmRzLkF1dGhlbnRpY2F0aW9uQmFja2VuZCIsIl9hdXRoX3VzZXJfaGFzaCI6IjY3MmUxZDgzNDMxYzg1NDUxNDQ5NTA4OGQ5M2ZiNjVmYjgzM2JlZmIiLCJpZCI6MjYxNzQ3MCwiZW1haWwiOiJjYXRoZXJpbmUubWF0dGEyMjM5OUBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImNhdG1hdHRhIiwidXNlcl9zbHVnIjoiY2F0bWF0dGEiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jb20vdXNlcnMvY2F0bWF0dGEvYXZhdGFyXzE2MjIyMTY1NTIucG5nIiwicmVmcmVzaGVkX2F0IjoxNjc1MjkwMjM0LCJpcCI6IjY3Ljg2LjExNC41NSIsImlkZW50aXR5IjoiMWU5ZGUyZWJhNjQwZThlZWE5ODUxYzE0MzRjNzU4ODYiLCJzZXNzaW9uX2lkIjozMDI4MzgxMH0.YGCSMxE2EN5MPgHtnosLe4Jz_-4uW-BOwY4SCbrxXrU; NEW_PROBLEMLIST_PAGE=1; _dd_s=rum=1&id=0fe9fee6-abe5-4ab5-bbf2-8f403fe1a59f&created=1675375375076&expire=1675376932353")
-// 	req.Header.Set("Content-Type", "application/json")
+func getDailyProblems() string{
+	query := `
+		query questionOfToday {
+			activeDailyCodingChallengeQuestion {
+				date
+				link
+				question {
+					acRate
+					difficulty
+					freqBar
+					title
+					topicTags {
+						name
+					}
+				}
+			}
+		}`
+	
 
-// 	// var res map[string]interface{}
+	payload := map[string]interface{}{
+		"query":     query,
+		"variables": "{}",
+		"operationName": "questionOfToday",
+	}
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Sprintf("Error marshalling data: %s\n", err)
+	}
 
-//     // json.NewDecoder(resp.Body).Decode(&res)
-//     client := &http.Client{}
-//     resp, err := client.Do(req)
-// 	if err != nil {
-//         panic(err)
-//     }
-//     defer resp.Body.Close()
+	req, err := http.NewRequest("POST", "https://leetcode.com/graphql/", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return fmt.Sprintf("Error creating request: %s\n", err)
+		
+	}
 
-//     fmt.Println("response Status:", resp.Status)
-//     fmt.Println("response Headers:", resp.Header)
-//     body, _ := ioutil.ReadAll(resp.Body)
-//     fmt.Println("response Body:", string(body))
-// }
+	req.Header.Set("Content-Type", "application/json")
 
-func parse(company string) string{
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Sprintf("Error making request: %s\n", err)
+		
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Sprintf("Error reading response body: %s\n", err)
+		
+	}
+
+	return fmt.Sprintf("%s",body)
+}
+
+func getCompanyProblems(company string) string{
 	link := fmt.Sprintf("https://leetcode-company-tagged.vercel.app/%s/", company)
 	resp, err := soup.Get(link)
 	if err != nil {
@@ -149,23 +166,18 @@ func parse(company string) string{
 	for  i := 1; i < len(elements); i++ {
 		item := elements[i]
 		row := item.FindAll("td")
-		// out.cut(0,4)
 		data := []string{}
 
 		for _, thing := range row{
 			url := thing.Find("a")
 
 			if(thing.Text() != ""){
-				// fmt.Println(thing.Text())
 				data = append(data, thing.Text())
-
 			}
 			if(url.Error == nil){
-				// fmt.Println(url.Attrs()["href"])
 				data = append(data, url.Attrs()["href"])
 			}
 		}
-		// fmt.Println(data)
 		individual := problem{
 			"Number": data[0],
 			"Name": data[1],
@@ -183,5 +195,5 @@ func parse(company string) string{
 			return "Error parsing"
 		}
 
-		return fmt.Sprintf("%s",jsonData)
+		return fmt.Sprintf("%s",string(jsonData))
 }
